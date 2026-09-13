@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Add Subscription - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Subscription
+                </h4>
+            </div>
+
+            <div class="card-body">
+
+                <form
+                    method="POST"
+                    action="{{ url_for('subscriptions.add_subscription') }}"
+                >
+
+                    <!-- Name -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Subscription Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="e.g. Netflix"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Category -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Category *
+                        </label>
+
+                        <select
+                            name="category"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option value="OTT">
+                                OTT
+                            </option>
+
+                            <option value="Music">
+                                Music
+                            </option>
+
+                            <option value="Gaming">
+                                Gaming
+                            </option>
+
+                            <option value="Cloud Storage">
+                                Cloud Storage
+                            </option>
+
+                            <option value="Software">
+                                Software
+                            </option>
+
+                            <option value="News">
+                                News
+                            </option>
+
+                            <option value="Education">
+                                Education
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <!-- Monthly Cost -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Monthly Cost (₹) *
+                            </label>
+
+                            <input
+                                type="number"
+                                name="monthly_cost"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                placeholder="e.g. 649"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Annual Cost -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Annual Cost (₹)
+                            </label>
+
+                            <input
+                                type="number"
+                                name="annual_cost"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                placeholder="Optional"
+                            >
+
+                            <small class="text-muted">
+                                Leave blank if not applicable.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <!-- Billing Cycle -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Billing Cycle *
+                            </label>
+
+                            <select
+                                name="billing_cycle"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="Monthly">
+                                    Monthly
+                                </option>
+
+                                <option value="Quarterly">
+                                    Quarterly
+                                </option>
+
+                                <option value="Yearly">
+                                    Yearly
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Start Date -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Start Date *
+                            </label>
+
+                            <input
+                                type="date"
+                                name="start_date"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Renewal Date -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Renewal Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="renewal_date"
+                            class="form-control"
+                        >
+
+                    </div>
+
+
+                    <!-- Notes -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Notes
+                        </label>
+
+                        <textarea
+                            name="notes"
+                            class="form-control"
+                            rows="4"
+                            placeholder="Add any notes about this subscription..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            <i class="fas fa-save"></i>
+                            Save Subscription
+                        </button>
+
+                        <a
+                            href="{{ url_for('subscriptions.list_subscriptions') }}"
+                            class="btn btn-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Usage - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="mb-4">
+
+            <h2>Edit Usage Record</h2>
+
+            <p class="text-muted">
+                Update the details of your subscription usage.
+            </p>
+
+        </div>
+
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0">
+
+                    <i class="fas fa-edit me-2"></i>
+
+                    Usage Details
+
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <form method="POST"
+                      action="{{ url_for(
+                          'main.edit_usage',
+                          log_id=log.id
+                      ) }}">
+
+
+                    <!-- Subscription -->
+
+                    <div class="mb-3">
+
+                        <label for="subscription_id"
+                               class="form-label">
+
+                            Subscription
+
+                        </label>
+
+                        <select name="subscription_id"
+                                id="subscription_id"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Subscription --
+                            </option>
+
+                            {% for subscription in subscriptions %}
+
+                            <option value="{{ subscription.id }}"
+                                {% if subscription.id == log.subscription_id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ subscription.name }}
+                                -
+                                {{ subscription.category }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Usage Date -->
+
+                    <div class="mb-3">
+
+                        <label for="usage_date"
+                               class="form-label">
+
+                            Usage Date
+
+                        </label>
+
+                        <input type="date"
+                               name="usage_date"
+                               id="usage_date"
+                               class="form-control"
+                               value="{{ log.usage_date.strftime('%Y-%m-%d') }}"
+                               required>
+
+                    </div>
+
+
+                    <!-- Hours Used -->
+
+                    <div class="mb-3">
+
+                        <label for="hours_used"
+                               class="form-label">
+
+                            Hours Used
+
+                        </label>
+
+                        <input type="number"
+                               name="hours_used"
+                               id="hours_used"
+                               class="form-control"
+                               min="0"
+                               step="0.1"
+                               value="{{ log.hours_used }}"
+                               required>
+
+                    </div>
+
+
+                    <!-- Activity Type -->
+
+                    <div class="mb-3">
+
+                        <label for="activity_type"
+                               class="form-label">
+
+                            Activity Type
+
+                        </label>
+
+                        <select name="activity_type"
+                                id="activity_type"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Activity --
+                            </option>
+
+                            <option value="Watching"
+                                {% if log.activity_type == 'Watching' %}
+                                    selected
+                                {% endif %}>
+                                Watching
+                            </option>
+
+                            <option value="Listening"
+                                {% if log.activity_type == 'Listening' %}
+                                    selected
+                                {% endif %}>
+                                Listening
+                            </option>
+
+                            <option value="Gaming"
+                                {% if log.activity_type == 'Gaming' %}
+                                    selected
+                                {% endif %}>
+                                Gaming
+                            </option>
+
+                            <option value="Reading"
+                                {% if log.activity_type == 'Reading' %}
+                                    selected
+                                {% endif %}>
+                                Reading
+                            </option>
+
+                            <option value="Learning"
+                                {% if log.activity_type == 'Learning' %}
+                                    selected
+                                {% endif %}>
+                                Learning
+                            </option>
+
+                            <option value="Other"
+                                {% if log.activity_type == 'Other' %}
+                                    selected
+                                {% endif %}>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Device -->
+
+                    <div class="mb-3">
+
+                        <label for="device_used"
+                               class="form-label">
+
+                            Device Used
+
+                        </label>
+
+                        <select name="device_used"
+                                id="device_used"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Device --
+                            </option>
+
+                            <option value="Mobile"
+                                {% if log.device_used == 'Mobile' %}
+                                    selected
+                                {% endif %}>
+                                Mobile
+                            </option>
+
+                            <option value="Laptop"
+                                {% if log.device_used == 'Laptop' %}
+                                    selected
+                                {% endif %}>
+                                Laptop
+                            </option>
+
+                            <option value="Desktop"
+                                {% if log.device_used == 'Desktop' %}
+                                    selected
+                                {% endif %}>
+                                Desktop
+                            </option>
+
+                            <option value="Tablet"
+                                {% if log.device_used == 'Tablet' %}
+                                    selected
+                                {% endif %}>
+                                Tablet
+                            </option>
+
+                            <option value="Smart TV"
+                                {% if log.device_used == 'Smart TV' %}
+                                    selected
+                                {% endif %}>
+                                Smart TV
+                            </option>
+
+                            <option value="Other"
+                                {% if log.device_used == 'Other' %}
+                                    selected
+                                {% endif %}>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Notes -->
+
+                    <div class="mb-4">
+
+                        <label for="notes"
+                               class="form-label">
+
+                            Notes
+
+                        </label>
+
+                        <textarea name="notes"
+                                  id="notes"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Optional notes...">{{ log.notes or '' }}</textarea>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+
+                    <div class="d-flex justify-content-between">
+
+                        <a href="{{ url_for('main.usage_history') }}"
+                           class="btn btn-outline-secondary">
+
+                            <i class="fas fa-arrow-left me-1"></i>
+
+                            Cancel
+
+                        </a>
+
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="fas fa-save me-1"></i>
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

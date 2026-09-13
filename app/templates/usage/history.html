@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Usage History - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Usage History</h2>
+        <p class="text-muted mb-0">
+            View and manage your subscription usage records.
+        </p>
+    </div>
+
+    <a href="{{ url_for('main.usage_log') }}"
+       class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>
+        Log Usage
+    </a>
+</div>
+
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Total Logs</small>
+                <h3 class="mb-0">{{ total_logs }}</h3>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Total Hours</small>
+                <h3 class="mb-0">
+                    {{ "%.1f"|format(total_hours|float) }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Records Shown</small>
+                <h3 class="mb-0">{{ usage_logs|length }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Filters -->
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="GET"
+              action="{{ url_for('main.usage_history') }}">
+
+            <div class="row g-3 align-items-end">
+
+                <!-- Subscription Search -->
+                <div class="col-md-5">
+
+                    <label for="subscription"
+                           class="form-label">
+                        Subscription
+                    </label>
+
+                    <input type="text"
+                           name="subscription"
+                           id="subscription"
+                           class="form-control"
+                           placeholder="Search subscription..."
+                           value="{{ subscription_search or '' }}">
+
+                </div>
+
+
+                <!-- Activity -->
+                <div class="col-md-4">
+
+                    <label for="activity"
+                           class="form-label">
+                        Activity Type
+                    </label>
+
+                    <select name="activity"
+                            id="activity"
+                            class="form-select">
+
+                        <option value="">
+                            All Activities
+                        </option>
+
+                        <option value="Watching"
+                            {% if activity_type == 'Watching' %}selected{% endif %}>
+                            Watching
+                        </option>
+
+                        <option value="Listening"
+                            {% if activity_type == 'Listening' %}selected{% endif %}>
+                            Listening
+                        </option>
+
+                        <option value="Gaming"
+                            {% if activity_type == 'Gaming' %}selected{% endif %}>
+                            Gaming
+                        </option>
+
+                        <option value="Reading"
+                            {% if activity_type == 'Reading' %}selected{% endif %}>
+                            Reading
+                        </option>
+
+                        <option value="Learning"
+                            {% if activity_type == 'Learning' %}selected{% endif %}>
+                            Learning
+                        </option>
+
+                        <option value="Other"
+                            {% if activity_type == 'Other' %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Search Button -->
+                <div class="col-md-3">
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="fas fa-search me-1"></i>
+                            Filter
+
+                        </button>
+
+                        <a href="{{ url_for('main.usage_history') }}"
+                           class="btn btn-outline-secondary">
+
+                            Clear
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Usage Table -->
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white">
+
+        <h5 class="mb-0">
+            <i class="fas fa-history me-2"></i>
+            Usage Records
+        </h5>
+
+    </div>
+
+
+    <div class="card-body p-0">
+
+        {% if usage_logs %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Subscription</th>
+                        <th>Hours</th>
+                        <th>Activity</th>
+                        <th>Device</th>
+                        <th>Notes</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for log in usage_logs %}
+
+                    <tr>
+
+                        <!-- Date -->
+                        <td>
+                            {{ log.usage_date.strftime('%d-%m-%Y') }}
+                        </td>
+
+
+                        <!-- Subscription -->
+                        <td>
+
+                            <strong>
+                                {{ log.subscription.name }}
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+                                {{ log.subscription.category }}
+                            </small>
+
+                        </td>
+
+
+                        <!-- Hours -->
+                        <td>
+
+                            <span class="badge bg-primary">
+                                {{ "%.1f"|format(log.hours_used|float) }} hrs
+                            </span>
+
+                        </td>
+
+
+                        <!-- Activity -->
+                        <td>
+
+                            {% if log.activity_type %}
+                                {{ log.activity_type }}
+                            {% else %}
+                                <span class="text-muted">
+                                    Not specified
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Device -->
+                        <td>
+
+                            {% if log.device_used %}
+                                {{ log.device_used }}
+                            {% else %}
+                                <span class="text-muted">
+                                    Not specified
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Notes -->
+                        <td>
+
+                            {% if log.notes %}
+
+                                <span title="{{ log.notes }}">
+                                    {{ log.notes[:50] }}
+
+                                    {% if log.notes|length > 50 %}
+                                        ...
+                                    {% endif %}
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Actions -->
+                        <td>
+
+                            <div class="d-flex justify-content-center gap-2">
+
+                                <!-- Edit -->
+                                <a href="{{ url_for(
+    'main.edit_usage',
+    log_id=log.id
+) }}"
+   class="btn btn-sm btn-outline-primary"
+   title="Edit usage">
+
+    <i class="fas fa-edit"></i>
+
+</a>
+
+
+                                <!-- Delete -->
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'main.delete_usage',
+                                          log_id=log.id
+                                      ) }}"
+                                      onsubmit="return confirm(
+                                          'Are you sure you want to delete this usage record?'
+                                      );">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            title="Delete usage">
+
+                                        <i class="fas fa-trash"></i>
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <!-- Empty State -->
+
+        <div class="text-center py-5">
+
+            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+
+            <h5>No usage records found</h5>
+
+            <p class="text-muted">
+                Start logging your subscription usage to see your
+                analytics here.
+            </p>
+
+            <a href="{{ url_for('main.usage_log') }}"
+               class="btn btn-primary">
+
+                <i class="fas fa-plus me-1"></i>
+                Log Your First Usage
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

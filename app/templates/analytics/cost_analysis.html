@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}Cost Analysis - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>Cost Analysis</h2>
+    <p class="text-muted">
+        Detailed breakdown of your subscription spending.
+    </p>
+</div>
+
+
+<!-- Summary Cards -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Monthly Spending</small>
+                <h3 class="mb-0">
+                    ₹{{ "%.2f"|format(total_monthly|float) }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Annual Spending</small>
+                <h3 class="mb-0">
+                    ₹{{ "%.2f"|format(total_annual|float) }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <small class="text-muted">Subscriptions</small>
+                <h3 class="mb-0">
+                    {{ subscriptions|length }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Spending Chart -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="fas fa-chart-pie me-2"></i>
+            Monthly Cost Distribution
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if chart_labels %}
+
+        <div style="height: 350px;">
+            <canvas id="costChart"></canvas>
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+            <p class="text-muted mb-0">
+                No subscription cost data available.
+            </p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Subscription Cost Table -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Subscription Costs
+        </h5>
+    </div>
+
+    <div class="card-body p-0">
+
+        {% if subscriptions %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Subscription</th>
+                        <th>Category</th>
+                        <th>Monthly Cost</th>
+                        <th>Annual Cost</th>
+                        <th>Billing Cycle</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for subscription in subscriptions %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ subscription.name }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ subscription.category }}
+                            </span>
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(subscription.monthly_cost|float) }}
+                        </td>
+
+                        <td>
+                            {% if subscription.annual_cost %}
+                                ₹{{ "%.2f"|format(subscription.annual_cost|float) }}
+                            {% else %}
+                                ₹{{ "%.2f"|format(
+                                    (subscription.monthly_cost|float) * 12
+                                ) }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ subscription.billing_cycle }}
+                        </td>
+
+                        <td>
+
+                            {% if subscription.status == 'Active' %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ subscription.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+            <p class="text-muted">
+                No subscriptions available for analysis.
+            </p>
+
+            <a href="{{ url_for('subscriptions.add_subscription') }}"
+               class="btn btn-primary">
+
+                <i class="fas fa-plus me-1"></i>
+                Add Subscription
+
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% if chart_labels %}
+
+<script>
+
+const costLabels = {{ chart_labels|tojson }};
+const costValues = {{ chart_values|tojson }};
+
+const costCanvas = document.getElementById('costChart');
+
+new Chart(costCanvas, {
+    type: 'doughnut',
+
+    data: {
+        labels: costLabels,
+
+        datasets: [{
+            data: costValues
+        }]
+    },
+
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+</script>
+
+{% endif %}
+
+{% endblock %}

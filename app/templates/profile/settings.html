@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>Profile Settings</h2>
+    <p class="text-muted">
+        Manage your account information and security settings.
+    </p>
+</div>
+
+
+<div class="row g-4">
+
+    <!-- Account Information -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    Account Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label text-muted">
+                        Username
+                    </label>
+
+                    <div class="form-control bg-light">
+                        {{ current_user.username }}
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label text-muted">
+                        Email Address
+                    </label>
+
+                    <div class="form-control bg-light">
+                        {{ current_user.email }}
+                    </div>
+
+                </div>
+
+
+                <div class="mb-0">
+
+                    <label class="form-label text-muted">
+                        Member Since
+                    </label>
+
+                    <div class="form-control bg-light">
+
+                        {% if current_user.created_at %}
+                            {{ current_user.created_at.strftime('%d-%m-%Y') }}
+                        {% else %}
+                            Not available
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Change Password -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lock me-2"></i>
+                    Change Password
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST"
+                      action="{{ url_for('main.update_password') }}">
+
+
+                    <div class="mb-3">
+
+                        <label for="current_password"
+                               class="form-label">
+
+                            Current Password
+
+                        </label>
+
+                        <input type="password"
+                               name="current_password"
+                               id="current_password"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label for="new_password"
+                               class="form-label">
+
+                            New Password
+
+                        </label>
+
+                        <input type="password"
+                               name="new_password"
+                               id="new_password"
+                               class="form-control"
+                               minlength="8"
+                               required>
+
+                        <div class="form-text">
+                            Password must be at least 8 characters.
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label for="confirm_password"
+                               class="form-label">
+
+                            Confirm New Password
+
+                        </label>
+
+                        <input type="password"
+                               name="confirm_password"
+                               id="confirm_password"
+                               class="form-control"
+                               minlength="8"
+                               required>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        <i class="fas fa-key me-1"></i>
+
+                        Update Password
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Change Email -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-envelope me-2"></i>
+                    Change Email
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST"
+                      action="{{ url_for('main.update_email') }}">
+
+
+                    <div class="mb-3">
+
+                        <label for="new_email"
+                               class="form-label">
+
+                            New Email Address
+
+                        </label>
+
+                        <input type="email"
+                               name="new_email"
+                               id="new_email"
+                               class="form-control"
+                               placeholder="Enter new email address"
+                               required>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        <i class="fas fa-envelope me-1"></i>
+
+                        Update Email
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Danger Zone -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-danger">
+
+            <div class="card-header bg-danger text-white">
+
+                <h5 class="mb-0">
+
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+
+                    Danger Zone
+
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <h6>
+                    Delete Account
+                </h6>
+
+                <p class="text-muted">
+                    Permanently delete your account and all associated
+                    subscriptions and usage records.
+                </p>
+
+
+                <form method="POST"
+                      action="{{ url_for('main.delete_account') }}"
+                      onsubmit="return confirm(
+                          'WARNING: This will permanently delete your account, subscriptions, and usage records. Are you sure?'
+                      );">
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        <i class="fas fa-trash me-1"></i>
+
+                        Delete My Account
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Value Score - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+    <h2>Subscription Value Score</h2>
+
+    <p class="text-muted">
+        See which subscriptions provide the best value based on
+        usage and cost.
+    </p>
+
+</div>
+
+
+<!-- Summary -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Average Value Score
+                </small>
+
+                <h3 class="mb-0">
+                    {{ "%.1f"|format(average_score|float) }}/100
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    High Value Subscriptions
+                </small>
+
+                <h3 class="mb-0">
+                    {{ high_value_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Low Value Subscriptions
+                </small>
+
+                <h3 class="mb-0">
+                    {{ low_value_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Value Score Table -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white">
+
+        <h5 class="mb-0">
+
+            <i class="fas fa-star me-2"></i>
+
+            Subscription Value Scores
+
+        </h5>
+
+    </div>
+
+
+    <div class="card-body p-0">
+
+        {% if data %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Subscription</th>
+                        <th>Monthly Cost</th>
+                        <th>Usage Hours</th>
+                        <th>Cost / Hour</th>
+                        <th>Value Score</th>
+                        <th>Recommendation</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in data %}
+
+                    <tr>
+
+                        <!-- Name -->
+
+                        <td>
+                            <strong>
+                                {{ item.name }}
+                            </strong>
+                        </td>
+
+
+                        <!-- Cost -->
+
+                        <td>
+                            ₹{{ "%.2f"|format(item.monthly_cost|float) }}
+                        </td>
+
+
+                        <!-- Usage -->
+
+                        <td>
+                            {{ "%.1f"|format(item.usage_hours|float) }}
+                            hrs
+                        </td>
+
+
+                        <!-- Cost per hour -->
+
+                        <td>
+                            ₹{{ "%.2f"|format(item.cost_per_use|float) }}
+                        </td>
+
+
+                        <!-- Score -->
+
+                        <td>
+
+                            {% if item.value_score >= 75 %}
+
+                                <span class="badge bg-success">
+                                    {{ "%.1f"|format(item.value_score|float) }}
+                                </span>
+
+                            {% elif item.value_score >= 50 %}
+
+                                <span class="badge bg-warning text-dark">
+                                    {{ "%.1f"|format(item.value_score|float) }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+                                    {{ "%.1f"|format(item.value_score|float) }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Recommendation -->
+
+                        <td>
+
+                            {% if item.recommendation == 'Keep' %}
+
+                                <span class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    Keep
+                                </span>
+
+                            {% elif item.recommendation == 'Review' %}
+
+                                <span class="text-warning">
+                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                    Review
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-danger">
+                                    <i class="fas fa-times-circle me-1"></i>
+                                    Consider Cancelling
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+
+            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+
+            <h5>No value score data available</h5>
+
+            <p class="text-muted">
+                Add subscriptions and log some usage to calculate
+                their value scores.
+            </p>
+
+            <a href="{{ url_for('subscriptions.add_subscription') }}"
+               class="btn btn-primary">
+
+                <i class="fas fa-plus me-1"></i>
+                Add Subscription
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

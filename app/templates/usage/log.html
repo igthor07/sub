@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Log Usage - SubTracker{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="mb-4">
+            <h2>Log Subscription Usage</h2>
+            <p class="text-muted">
+                Record how you used your subscriptions.
+            </p>
+        </div>
+
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Usage Details
+                </h5>
+            </div>
+
+
+            <div class="card-body">
+
+                <form method="POST"
+                      action="{{ url_for('main.usage_log') }}">
+
+
+                    <!-- Subscription -->
+                    <div class="mb-3">
+
+                        <label for="subscription_id"
+                               class="form-label">
+                            Subscription
+                        </label>
+
+                        <select name="subscription_id"
+                                id="subscription_id"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Subscription --
+                            </option>
+
+                            {% for subscription in subscriptions %}
+
+                            <option value="{{ subscription.id }}">
+
+                                {{ subscription.name }}
+                                -
+                                {{ subscription.category }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Usage Date -->
+                    <div class="mb-3">
+
+                        <label for="usage_date"
+                               class="form-label">
+                            Usage Date
+                        </label>
+
+                        <input type="date"
+                               name="usage_date"
+                               id="usage_date"
+                               class="form-control"
+                               value="{{ request.form.get('usage_date', '') }}"
+                               required>
+
+                    </div>
+
+
+                    <!-- Hours Used -->
+                    <div class="mb-3">
+
+                        <label for="hours_used"
+                               class="form-label">
+                            Hours Used
+                        </label>
+
+                        <input type="number"
+                               name="hours_used"
+                               id="hours_used"
+                               class="form-control"
+                               min="0"
+                               step="0.1"
+                               placeholder="e.g. 2.5"
+                               value="{{ request.form.get('hours_used', '') }}"
+                               required>
+
+                        <div class="form-text">
+                            Enter the approximate number of hours you used
+                            this subscription.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Activity Type -->
+                    <div class="mb-3">
+
+                        <label for="activity_type"
+                               class="form-label">
+                            Activity Type
+                        </label>
+
+                        <select name="activity_type"
+                                id="activity_type"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Activity --
+                            </option>
+
+                            <option value="Watching">
+                                Watching
+                            </option>
+
+                            <option value="Listening">
+                                Listening
+                            </option>
+
+                            <option value="Gaming">
+                                Gaming
+                            </option>
+
+                            <option value="Reading">
+                                Reading
+                            </option>
+
+                            <option value="Learning">
+                                Learning
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Device -->
+                    <div class="mb-3">
+
+                        <label for="device_used"
+                               class="form-label">
+                            Device Used
+                        </label>
+
+                        <select name="device_used"
+                                id="device_used"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Device --
+                            </option>
+
+                            <option value="Mobile">
+                                Mobile
+                            </option>
+
+                            <option value="Laptop">
+                                Laptop
+                            </option>
+
+                            <option value="Desktop">
+                                Desktop
+                            </option>
+
+                            <option value="Tablet">
+                                Tablet
+                            </option>
+
+                            <option value="Smart TV">
+                                Smart TV
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Notes -->
+                    <div class="mb-4">
+
+                        <label for="notes"
+                               class="form-label">
+                            Notes
+                        </label>
+
+                        <textarea name="notes"
+                                  id="notes"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Optional notes about your usage...">{{ request.form.get('notes', '') }}</textarea>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between">
+
+                        <a href="{{ url_for('main.usage_history') }}"
+                           class="btn btn-outline-secondary">
+
+                            <i class="fas fa-history me-1"></i>
+                            View History
+
+                        </a>
+
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="fas fa-save me-1"></i>
+                            Save Usage
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
