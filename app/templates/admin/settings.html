@@ -1,0 +1,59 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Settings</h2>
+        <p class="text-muted mb-0">System status and administrative information</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Database</small>
+                <h4 class="mb-0 text-success">{{ database_status }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Admin Account</small>
+                <h4 class="mb-0">{{ admin_username }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Users</small>
+                <h4 class="mb-0">{{ total_users }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Subscriptions</small>
+                <h4 class="mb-0">{{ total_subscriptions }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-body">
+        <h5>Platform Information</h5>
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Usage records</dt>
+            <dd class="col-sm-8">{{ total_usage_records }}</dd>
+            <dt class="col-sm-4">Access control</dt>
+            <dd class="col-sm-8">Admin-only routes enabled</dd>
+            <dt class="col-sm-4">Reports</dt>
+            <dd class="col-sm-8">CSV export enabled</dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}

@@ -364,17 +364,29 @@ class AnalyticsEngine:
                 user_id
             )
 
-            if score >= 80:
-                recommendation = 'Excellent value'
+            usage_logs = UsageLog.query.filter_by(
+                user_id=user_id,
+                subscription_id=subscription.id
+            ).all()
 
-            elif score >= 60:
-                recommendation = 'Good value'
+            usage_hours = sum(
+                float(log.hours_used or 0)
+                for log in usage_logs
+            )
+
+            cost_per_use = self.calculate_cost_per_use(
+                subscription.id,
+                user_id
+            )
+
+            if score >= 60:
+                recommendation = 'Keep'
 
             elif score >= 40:
-                recommendation = 'Consider reviewing usage'
+                recommendation = 'Review'
 
             else:
-                recommendation = 'Low value - consider cancelling'
+                recommendation = 'Consider cancelling'
 
             data.append({
                 'id': subscription.id,
@@ -383,6 +395,8 @@ class AnalyticsEngine:
                 'monthly_cost': float(
                     subscription.monthly_cost or 0
                 ),
+                'usage_hours': usage_hours,
+                'cost_per_use': cost_per_use,
                 'value_score': score,
                 'recommendation': recommendation
             })

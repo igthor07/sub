@@ -1,0 +1,42 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Usage Analytics</h2>
+        <p class="text-muted mb-0">Monitoring platform-wide usage activity</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Total Usage</small><h3>{{ '%.2f'|format(total_usage) }} hrs</h3></div></div></div>
+    <div class="col-md-6"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Usage Records</small><h3>{{ usage_logs|length }}</h3></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Most Used Subscriptions</h5></div>
+            <div class="card-body">
+                {% for name, total_hours in usage_by_subscription %}
+                <div class="d-flex justify-content-between border-bottom py-2"><span>{{ name }}</span><strong>{{ '%.2f'|format(total_hours|float) }} hrs</strong></div>
+                {% else %}
+                <p class="mb-0 text-muted">No usage data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Usage by Category</h5></div>
+            <div class="card-body">
+                {% for category, total_hours in usage_by_category %}
+                <div class="d-flex justify-content-between border-bottom py-2"><span>{{ category }}</span><strong>{{ '%.2f'|format(total_hours|float) }} hrs</strong></div>
+                {% else %}
+                <p class="mb-0 text-muted">No category usage data.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

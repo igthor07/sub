@@ -1,0 +1,110 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>User Details</h2>
+        <p class="text-muted mb-0">{{ user.username }}</p>
+    </div>
+    <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">Back to Users</a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white"><h5 class="mb-0">User Information</h5></div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Role:</strong> {{ user.role }}</p>
+                <p><strong>Registration Date:</strong> {{ user.created_at.strftime('%d-%m-%Y') if user.created_at else 'N/A' }}</p>
+                <p><strong>Account Status:</strong> {% if user.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white"><h5 class="mb-0">Summary</h5></div>
+            <div class="card-body">
+                <p><strong>Total Spending:</strong> ₹{{ '%.2f'|format(total_spending) }}</p>
+                <p><strong>Average Subscription Cost:</strong> ₹{{ '%.2f'|format(average_cost) }}</p>
+                <p><strong>Total Usage:</strong> {{ '%.2f'|format(total_hours) }} hrs</p>
+                <p><strong>Subscriptions:</strong> {{ subscriptions|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Subscription Information</h5></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr><th>Name</th><th>Category</th><th>Cost</th><th>Status</th><th>Renewal</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for subscription in subscriptions %}
+                        <tr>
+                            <td>{{ subscription.name }}</td>
+                            <td>{{ subscription.category }}</td>
+                            <td>₹{{ '%.2f'|format(subscription.monthly_cost|float) }}</td>
+                            <td><span class="badge {% if subscription.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ subscription.status }}</span></td>
+                            <td>{{ subscription.renewal_date.strftime('%d-%m-%Y') if subscription.renewal_date else 'N/A' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-3">No subscriptions found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Usage Information</h5></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr><th>Date</th><th>Subscription</th><th>Hours</th><th>Activity</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for log in usage_logs[:10] %}
+                        <tr>
+                            <td>{{ log.usage_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ log.subscription.name if log.subscription else 'N/A' }}</td>
+                            <td>{{ '%.2f'|format(log.hours_used|float) }}</td>
+                            <td>{{ log.activity_type or 'N/A' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center py-3 text-muted">No usage logs found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-white"><h5 class="mb-0">Value Score</h5></div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead class="table-light"><tr><th>Subscription</th><th>Usage</th><th>Score</th><th>Recommendation</th></tr></thead>
+            <tbody>
+                {% for item in value_scores %}
+                <tr>
+                    <td>{{ item.subscription.name }}</td>
+                    <td>{{ '%.2f'|format(item.usage_hours|float) }}</td>
+                    <td>{{ '%.2f'|format(item.score) }}</td>
+                    <td>{{ item.recommendation }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-3">No value score data.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
