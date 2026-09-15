@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from sqlalchemy import func
 
 from app.database.models import Subscription, UsageLog
 
@@ -79,9 +78,16 @@ class AnalyticsEngine:
         if not subscription:
             return 0
 
-        usage_logs = UsageLog.query.filter_by(
+        usage_logs_query = UsageLog.query.filter_by(
             subscription_id=subscription_id
-        ).all()
+        )
+
+        if user_id is not None:
+            usage_logs_query = usage_logs_query.filter_by(
+                user_id=user_id
+            )
+
+        usage_logs = usage_logs_query.all()
 
         total_hours = sum(
             float(log.hours_used or 0)
@@ -89,7 +95,7 @@ class AnalyticsEngine:
         )
 
         if total_hours <= 0:
-            return float(subscription.monthly_cost or 0)
+            return 0
 
         return float(
             subscription.monthly_cost or 0
@@ -151,8 +157,10 @@ class AnalyticsEngine:
         if not subscription:
             return 0
 
+        # Last 30 days
         thirty_days_ago = (
-            datetime.utcnow().date() - timedelta(days=30)
+            datetime.utcnow().date()
+            - timedelta(days=30)
         )
 
         usage_logs_query = UsageLog.query.filter(
@@ -167,11 +175,17 @@ class AnalyticsEngine:
 
         usage_logs = usage_logs_query.all()
 
+        # -----------------------------------------------------
+        # TOTAL HOURS
+        # -----------------------------------------------------
         total_hours = sum(
             float(log.hours_used or 0)
             for log in usage_logs
         )
 
+        # -----------------------------------------------------
+        # UNIQUE USAGE DAYS
+        # -----------------------------------------------------
         usage_days = len(
             set(
                 log.usage_date
@@ -179,13 +193,19 @@ class AnalyticsEngine:
             )
         )
 
-        # Frequency score: maximum 100
+        # -----------------------------------------------------
+        # FREQUENCY SCORE
+        # 60% WEIGHT
+        # -----------------------------------------------------
         frequency_score = min(
-            usage_days / 30 * 100,
+            (usage_days / 30) * 100,
             100
         )
 
-        # Cost efficiency score
+        # -----------------------------------------------------
+        # COST EFFICIENCY SCORE
+        # 40% WEIGHT
+        # -----------------------------------------------------
         monthly_cost = float(
             subscription.monthly_cost or 0
         )
@@ -198,12 +218,16 @@ class AnalyticsEngine:
 
             if cost_per_hour <= 1:
                 efficiency_score = 100
+
             elif cost_per_hour <= 3:
                 efficiency_score = 80
+
             elif cost_per_hour <= 5:
                 efficiency_score = 60
+
             elif cost_per_hour <= 10:
                 efficiency_score = 40
+
             else:
                 efficiency_score = 20
 
@@ -215,6 +239,9 @@ class AnalyticsEngine:
 
             efficiency_score = 0
 
+        # -----------------------------------------------------
+        # FINAL VALUE SCORE
+        # -----------------------------------------------------
         value_score = (
             frequency_score * 0.6
             + efficiency_score * 0.4
@@ -276,10 +303,10 @@ class AnalyticsEngine:
                 '%Y-%m-%d'
             )
 
-            pattern[date_string] = pattern.get(
-                date_string,
-                0
-            ) + float(log.hours_used or 0)
+            pattern[date_string] = (
+                pattern.get(date_string, 0)
+                + float(log.hours_used or 0)
+            )
 
         return pattern
 
@@ -305,9 +332,10 @@ class AnalyticsEngine:
             for subscription in subscriptions
         ]
 
-        # Last 30 days usage
+        # Last 30 days
         thirty_days_ago = (
-            datetime.utcnow().date() - timedelta(days=30)
+            datetime.utcnow().date()
+            - timedelta(days=30)
         )
 
         usage_logs = UsageLog.query.filter(
@@ -357,36 +385,89 @@ class AnalyticsEngine:
 
         data = []
 
+        # Last 30 days
+        thirty_days_ago = (
+            datetime.utcnow().date()
+            - timedelta(days=30)
+        )
+
         for subscription in subscriptions:
 
+            # -------------------------------------------------
+            # GET USAGE LOGS
+            # -------------------------------------------------
+            usage_logs = UsageLog.query.filter(
+                UsageLog.user_id == user_id,
+                UsageLog.subscription_id == subscription.id,
+                UsageLog.usage_date >= thirty_days_ago
+            ).all()
+
+            # -------------------------------------------------
+            # TOTAL USAGE HOURS
+            # -------------------------------------------------
+            usage_hours = sum(
+                float(log.hours_used or 0)
+                for log in usage_logs
+            )
+
+            # -------------------------------------------------
+            # VALUE SCORE
+            # -------------------------------------------------
             score = self.calculate_value_score(
                 subscription.id,
                 user_id
             )
 
-            if score >= 80:
-                recommendation = 'Excellent value'
+            # -------------------------------------------------
+            # MONTHLY COST
+            # -------------------------------------------------
+            monthly_cost = float(
+                subscription.monthly_cost or 0
+            )
 
-            elif score >= 60:
-                recommendation = 'Good value'
+            # -------------------------------------------------
+            # COST PER HOUR
+            # -------------------------------------------------
+            if usage_hours > 0:
 
-            elif score >= 40:
-                recommendation = 'Consider reviewing usage'
+                cost_per_use = (
+                    monthly_cost / usage_hours
+                )
 
             else:
-                recommendation = 'Low value - consider cancelling'
 
+                cost_per_use = 0
+
+            # -------------------------------------------------
+            # RECOMMENDATION
+            # -------------------------------------------------
+            if score >= 75:
+
+                recommendation = 'Keep'
+
+            elif score >= 50:
+
+                recommendation = 'Review'
+
+            else:
+
+                recommendation = 'Consider Cancelling'
+
+            # -------------------------------------------------
+            # FINAL DATA
+            # -------------------------------------------------
             data.append({
                 'id': subscription.id,
                 'name': subscription.name,
                 'category': subscription.category,
-                'monthly_cost': float(
-                    subscription.monthly_cost or 0
-                ),
+                'monthly_cost': monthly_cost,
+                'usage_hours': usage_hours,
+                'cost_per_use': cost_per_use,
                 'value_score': score,
                 'recommendation': recommendation
             })
 
+        # Highest score first
         return sorted(
             data,
             key=lambda x: x['value_score'],
