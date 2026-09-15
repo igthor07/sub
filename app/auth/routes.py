@@ -14,7 +14,8 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
 
     if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
+        destination = 'admin.dashboard' if current_user.role == 'admin' else 'main.dashboard'
+        return redirect(url_for(destination))
 
     if request.method == 'POST':
 
@@ -28,13 +29,18 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        if user and user.check_password(password):
+        if user and user.check_password(password) and user.is_active:
             login_user(user, remember=remember)
 
             flash('Login successful!', 'success')
+            if user.role == 'admin':
+                return redirect(url_for('admin.dashboard'))
             return redirect(url_for('main.dashboard'))
 
-        flash('Invalid email or password.', 'danger')
+        if user and not user.is_active:
+            flash('This account has been deactivated.', 'danger')
+        else:
+            flash('Invalid email or password.', 'danger')
 
     return render_template('auth/login.html')
 
@@ -46,7 +52,8 @@ def login():
 def register():
 
     if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
+        destination = 'admin.dashboard' if current_user.role == 'admin' else 'main.dashboard'
+        return redirect(url_for(destination))
 
     if request.method == 'POST':
 

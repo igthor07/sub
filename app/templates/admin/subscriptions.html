@@ -1,0 +1,70 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Subscriptions</h2>
+        <p class="text-muted mb-0">Review all subscriptions across the platform</p>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control" name="q" value="{{ search }}" placeholder="Search subscription">
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="category">
+            <option value="">All categories</option>
+            {% for category in categories %}
+            <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="status">
+            <option value="">All statuses</option>
+            <option value="Active" {% if status == 'Active' %}selected{% endif %}>Active</option>
+            <option value="Paused" {% if status == 'Paused' %}selected{% endif %}>Paused</option>
+            <option value="Cancelled" {% if status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>User</th>
+                    <th>Subscription</th>
+                    <th>Category</th>
+                    <th>Cost</th>
+                    <th>Billing Cycle</th>
+                    <th>Status</th>
+                    <th>Renewal Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in subscriptions %}
+                {% set subscription = row[0] if row is sequence and row|length > 1 else row %}
+                {% set user_name = row[1] if row is sequence and row|length > 1 else 'Unknown' %}
+                <tr>
+                    <td>{{ user_name }}</td>
+                    <td>{{ subscription.name }}</td>
+                    <td><span class="badge bg-secondary">{{ subscription.category }}</span></td>
+                    <td>₹{{ '%.2f'|format(subscription.monthly_cost|float) }}</td>
+                    <td>{{ subscription.billing_cycle }}</td>
+                    <td><span class="badge {% if subscription.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ subscription.status }}</span></td>
+                    <td>{{ subscription.renewal_date.strftime('%d-%m-%Y') if subscription.renewal_date else 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-4 text-muted">No subscriptions found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

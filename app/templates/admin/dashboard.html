@@ -1,0 +1,108 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Dashboard</h2>
+        <p class="text-muted mb-0">System overview and platform health</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Total Users</small>
+                <h3 class="mb-0">{{ total_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Active Users</small>
+                <h3 class="mb-0">{{ active_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Total Subscriptions</small>
+                <h3 class="mb-0">{{ total_subscriptions }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Active Subscriptions</small>
+                <h3 class="mb-0">{{ active_subscriptions }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Usage Records</small>
+                <h3 class="mb-0">{{ total_usage_records }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <small class="text-muted">Total Subscription Spending</small>
+                <h3 class="mb-0">₹{{ '%.2f'|format(total_spending) }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Recent Users</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for user in recent_users %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ user.username }}</strong><br>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                        <span class="badge bg-secondary">{{ user.role }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="list-group-item text-muted">No users found.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Recent Subscriptions</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for subscription in recent_subscriptions %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ subscription.name }}</strong><br>
+                            <small class="text-muted">{{ subscription.category }}</small>
+                        </div>
+                        <span class="badge bg-success">{{ subscription.status }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="list-group-item text-muted">No subscriptions found.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

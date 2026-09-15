@@ -1,0 +1,30 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Spending Analytics</h2>
+        <p class="text-muted mb-0">Monthly and category-based spending overview</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Total Spending</small><h3>₹{{ '%.2f'|format(total_spending) }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Yearly Projection</small><h3>₹{{ '%.2f'|format(yearly_projection) }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Subscriptions</small><h3>{{ subscriptions|length }}</h3></div></div></div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white"><h5 class="mb-0">Category Spending</h5></div>
+    <div class="card-body">
+        {% for category, value in category_costs %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+            <span>{{ category }}</span>
+            <strong>₹{{ '%.2f'|format(value|float) }}</strong>
+        </div>
+        {% else %}
+        <p class="mb-0 text-muted">No spending data to display.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

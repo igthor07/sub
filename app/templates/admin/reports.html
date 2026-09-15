@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Reports</h2>
+        <p class="text-muted mb-0">Generate CSV exports for operational reporting</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5>User Report</h5>
+                <p class="text-muted small mb-3">Export all registered users.</p>
+                <a href="{{ url_for('admin.export_report', report_type='users') }}" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5>Subscription Report</h5>
+                <p class="text-muted small mb-3">Export all monitored subscriptions.</p>
+                <a href="{{ url_for('admin.export_report', report_type='subscriptions') }}" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5>Usage Report</h5>
+                <p class="text-muted small mb-3">Export all usage records.</p>
+                <a href="{{ url_for('admin.export_report', report_type='usage') }}" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5>Spending Report</h5>
+                <p class="text-muted small mb-3">Export spending detail with category totals.</p>
+                <a href="{{ url_for('admin.export_report', report_type='spending') }}" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5>Value Score Report</h5>
+                <p class="text-muted small mb-3">Export subscription value scores.</p>
+                <a href="{{ url_for('admin.export_report', report_type='value-score') }}" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

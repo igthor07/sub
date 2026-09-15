@@ -418,6 +418,7 @@ class AnalyticsEngine:
                 user_id
             )
 
+<<<<<<< HEAD
             # -------------------------------------------------
             # MONTHLY COST
             # -------------------------------------------------
@@ -435,6 +436,31 @@ class AnalyticsEngine:
                 )
 
             else:
+=======
+            usage_logs = UsageLog.query.filter_by(
+                user_id=user_id,
+                subscription_id=subscription.id
+            ).all()
+
+            usage_hours = sum(
+                float(log.hours_used or 0)
+                for log in usage_logs
+            )
+
+            cost_per_use = self.calculate_cost_per_use(
+                subscription.id,
+                user_id
+            )
+
+            if score >= 60:
+                recommendation = 'Keep'
+
+            elif score >= 40:
+                recommendation = 'Review'
+
+            else:
+                recommendation = 'Consider cancelling'
+>>>>>>> 39ea5e74076e9288e29fa24afc7f85646e698949
 
                 cost_per_use = 0
 
@@ -460,7 +486,13 @@ class AnalyticsEngine:
                 'id': subscription.id,
                 'name': subscription.name,
                 'category': subscription.category,
+<<<<<<< HEAD
                 'monthly_cost': monthly_cost,
+=======
+                'monthly_cost': float(
+                    subscription.monthly_cost or 0
+                ),
+>>>>>>> 39ea5e74076e9288e29fa24afc7f85646e698949
                 'usage_hours': usage_hours,
                 'cost_per_use': cost_per_use,
                 'value_score': score,

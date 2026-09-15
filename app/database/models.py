@@ -1,9 +1,45 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 db = SQLAlchemy()
+
+
+def ensure_database_schema():
+    """Add missing columns to existing databases without breaking current data."""
+    try:
+        inspector = db.inspect(db.engine)
+    except Exception:
+        return
+
+    if 'users' not in inspector.get_table_names():
+        return
+
+    columns = {column['name'] for column in inspector.get_columns('users')}
+
+    if 'role' not in columns:
+        try:
+            db.session.execute(
+                text("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user'")
+            )
+        except Exception:
+            db.session.execute(
+                text("ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user'")
+            )
+
+    if 'is_active' not in columns:
+        try:
+            db.session.execute(
+                text("ALTER TABLE users ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT 1")
+            )
+        except Exception:
+            db.session.execute(
+                text("ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1")
+            )
+
+    db.session.commit()
 
 
 class User(UserMixin, db.Model):
@@ -26,6 +62,20 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(
         db.String(255),
         nullable=False
+    )
+
+    role = db.Column(
+        db.String(20),
+        nullable=False,
+        default='user',
+        server_default='user'
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True,
+        server_default='1'
     )
 
     created_at = db.Column(
@@ -52,6 +102,10 @@ class User(UserMixin, db.Model):
         lazy=True,
         cascade='all, delete-orphan'
     )
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

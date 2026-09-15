@@ -1,0 +1,41 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Value Score Analytics</h2>
+        <p class="text-muted mb-0">Subscription value ranking across all users</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Subscription</th>
+                    <th>User</th>
+                    <th>Cost</th>
+                    <th>Usage</th>
+                    <th>Value Score</th>
+                    <th>Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row.subscription }}</td>
+                    <td>{{ row.user }}</td>
+                    <td>₹{{ '%.2f'|format(row.cost|float) }}</td>
+                    <td>{{ '%.2f'|format(row.usage|float) }} hrs</td>
+                    <td>{{ '%.2f'|format(row.value_score|float) }}</td>
+                    <td><span class="badge {% if row.recommendation == 'High Value' %}bg-success{% elif row.recommendation == 'Medium Value' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ row.recommendation }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No value score data found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

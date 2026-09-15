@@ -1,0 +1,55 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Global Analytics</h2>
+        <p class="text-muted mb-0">Platform-wide subscription and usage insights</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Total Users</small><h3>{{ total_users }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">New Users</small><h3>{{ new_users }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Active Users</small><h3>{{ active_users }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Total Subscriptions</small><h3>{{ total_subscriptions }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Active Subscriptions</small><h3>{{ active_subscriptions }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Total Usage Records</small><h3>{{ total_usage_records }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Monthly Spending</small><h3>₹{{ '%.2f'|format(total_monthly_spending) }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Yearly Projection</small><h3>₹{{ '%.2f'|format(yearly_projection) }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm border-0"><div class="card-body"><small class="text-muted">Avg. Spend/User</small><h3>₹{{ '%.2f'|format(average_spending_per_user) }}</h3></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Spending by Category</h5></div>
+            <div class="card-body">
+                {% for category, total in category_costs %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between"><span>{{ category }}</span><strong>₹{{ '%.2f'|format(total|float) }}</strong></div>
+                    <div class="progress" style="height: 8px;"><div class="progress-bar bg-primary" role="progressbar" style="width: {{ (total / (category_costs|sum(attribute='1') if category_costs else 1) * 100) if category_costs else 0 }}%"></div></div>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No category data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white"><h5 class="mb-0">Most Used Subscriptions</h5></div>
+            <div class="card-body">
+                {% for name, hours in top_subscriptions %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ name }}</span>
+                    <strong>{{ '%.2f'|format(hours|float) }} hrs</strong>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No usage data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
